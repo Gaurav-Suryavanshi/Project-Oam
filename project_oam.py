@@ -37,7 +37,7 @@ def get_weather(city):
         'appid': OPENWEATHERMAP_API_KEY,
         'units': 'metric'  # Change to 'imperial' for Fahrenheit
     }
-
+#hey its just a test changes
     response = requests.get(OWM_API_ENDPOINT, params=params)
     weather_data = response.json()
 
