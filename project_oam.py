@@ -9,6 +9,33 @@ import random
 import cv2
 import requests
 
+TMDB_API_KEY = 'e46699161f0b7dd8356b06b96aa874f9'
+def get_movie_rating(movie_title):
+    search_url = f"https://api.themoviedb.org/3/search/movie"
+    params = {
+        'api_key': TMDB_API_KEY,
+        'query': movie_title
+    }
+    response = requests.get(search_url, params=params)
+    data = response.json()
+
+    if response.status_code == 200 and data['results']:
+        movie_id = data['results'][0]['id']
+        movie_details_url = f"https://api.themoviedb.org/3/movie/{movie_id}"
+        params = {
+            'api_key': TMDB_API_KEY,
+        }
+        movie_response = requests.get(movie_details_url, params=params)
+        movie_data = movie_response.json()
+        if movie_response.status_code == 200:
+            rating = movie_data.get('vote_average')
+            return f"The rating of {movie_title} is {rating} out of 10."
+        else:
+            return f"Sorry, I couldn't fetch the rating for {movie_title}."
+    else:
+        return f"Sorry, I couldn't find information about the movie {movie_title}."
+
+
 NEWS_API_KEY = "31f1932d9f094afe9fc40ec9953ddafa"
 def get_news():
     news_url = f"https://newsapi.org/v2/top-headlines?country=in&apiKey={NEWS_API_KEY}"
@@ -37,7 +64,7 @@ def get_weather(city):
         'appid': OPENWEATHERMAP_API_KEY,
         'units': 'metric'  # Change to 'imperial' for Fahrenheit
     }
-#hey its just a test changes
+
     response = requests.get(OWM_API_ENDPOINT, params=params)
     weather_data = response.json()
 
@@ -123,12 +150,21 @@ if __name__ == '__main__':
         print("Listening....")
         query = takeCommand()
         sites = [["Youtube", "https://www.youtube.com/"],["WikiPedia", "https://www.wikipedia.com/"],
-                 ["Google", "https://www.google.com/"],["chat gpt", "https://chat.openai.com/"],
-                 ["twitter", "https://twitter.com/"],["facebook", "https://www.facebook.com/"]]
+                 ["Google", "https://www.google.com/"],["chat gpt", "https://chat.openai.com/"]]
         for site in sites:
-            if f"Open {site[0]}".lower() in query.lower():
-                webbrowser.open(site[1])
-                speaker.speak(f"Opening{site[0]} sir....")
+
+            if "open" in query.lower() and any(site[0].lower() in query.lower() for site in sites):
+                site_name = next(site[0] for site in sites if site[0].lower() in query.lower())
+                speaker.speak(f"What do you want to search on {site_name}?")
+                search_query = takeCommand()
+                search_url = next(site[1] for site in sites if site[0].lower() == site_name.lower())
+                if search_query:
+                    webbrowser.open(f"{search_url}/search?q={search_query}")
+                    speaker.speak(f"Searching {search_query} on {site_name}.")
+                else:
+                    # If no search query provided, just open the site
+                    webbrowser.open(search_url)
+                    speaker.speak(f"Opening {site_name}.")
                 break
 
             if "play music" in query:
@@ -182,19 +218,14 @@ if __name__ == '__main__':
                 get_news()
                 break
 
-            elif "open" in query.lower() and any(site[0].lower() in query.lower() for site in sites):
-                site_name = next(site[0] for site in sites if site[0].lower() in query.lower())
-                speaker.speak(f"What do you want to search on {site_name}?")
-                search_query = takeCommand()
-                search_url = next(site[1] for site in sites if site[0].lower() == site_name.lower())
-                if search_query:
-                    webbrowser.open(f"{search_url}/search?q={search_query}")
-                    speaker.speak(f"Searching {search_query} on {site_name}.")
-                else:
-                    # If no search query provided, just open the site
-                    webbrowser.open(search_url)
-                    speaker.speak(f"Opening {site_name}.")
+            elif "find the movie rating" in query:
+                movie_title = query.split("movie rating of")[1].strip()
+                rating_info = get_movie_rating(movie_title)
+                print(rating_info)
+                speaker.speak(rating_info)
                 break
+
+
 
             else:
                 chat(query)
