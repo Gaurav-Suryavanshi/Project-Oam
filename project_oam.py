@@ -65,7 +65,7 @@ def open_detector():
     cap.release()
     cv2.destroyAllWindows()
 
-TMDB_API_KEY = 'e46699161f0b7dd8356b06b96aa874f9'
+TMDB_API_KEY = 'YOUR_TMDB_API_KEY'
 def get_movie_rating(movie_title):
     search_url = f"https://api.themoviedb.org/3/search/movie"
     params = {
@@ -92,7 +92,7 @@ def get_movie_rating(movie_title):
         return f"Sorry, I couldn't find information about the movie {movie_title}."
 
 
-NEWS_API_KEY = "31f1932d9f094afe9fc40ec9953ddafa"
+NEWS_API_KEY = "YOUR_NEWS_API_KEY"
 def get_news():
     news_url = f"https://newsapi.org/v2/top-headlines?country=in&apiKey={NEWS_API_KEY}"
     response = requests.get(news_url)
@@ -112,7 +112,7 @@ def get_news():
         print(f"Error fetching news: {news_data.get('message', 'Unknown error')}")
         speaker.speak("Sorry, there was an error fetching news.")
 
-OPENWEATHERMAP_API_KEY = '1e3ea8d22f2e6d4a68d9eaada1d5909f'
+OPENWEATHERMAP_API_KEY = 'YOUR_WEATHER_API_KEY'
 OWM_API_ENDPOINT = 'http://api.openweathermap.org/data/2.5/weather'
 def get_weather(city):
     params = {
@@ -134,7 +134,7 @@ def get_weather(city):
 chatStr = ""
 def chat(query):
     global chatStr
-    client = OpenAI(api_key="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")
+    client = OpenAI(api_key="YOUR_OPENAI_API_KEY")
     chatStr += f"Gaurav: {query}\n Oam:"
     response = client.completions.create(
         model="gpt-3.5-turbo-instruct",
@@ -167,7 +167,7 @@ def open_camera():
     cv2.destroyAllWindows()
 
 def ai(prompt):
-    client = OpenAI(api_key = "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")
+    client = OpenAI(api_key = "YOUR_OPENAI_API_KEY")
     text = f"OpenAI response for Prompt: {prompt} \n *********************** \n\n"
     response = client.completions.create(
         model="gpt-3.5-turbo-instruct",
