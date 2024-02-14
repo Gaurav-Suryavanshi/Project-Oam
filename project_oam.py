@@ -9,7 +9,7 @@ import random
 import cv2
 import requests
 import numpy as np
-
+#new comment added
 def open_detector():
     cap = cv2.VideoCapture(0)
 
